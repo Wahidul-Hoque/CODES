@@ -1,0 +1,2 @@
+Shortest Path - BFS
+Connected Components- The minimum number of roads needed to connect all cities is (number of connected components - 1)
