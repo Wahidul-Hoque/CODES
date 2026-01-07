@@ -1,0 +1,58 @@
+//at most k edges
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+const ll INF = 1e18;
+
+struct edge {
+    int u, v;
+    ll w;
+};
+
+int main() {
+    int n, m, k;
+    // Note: We take k as input for the edge limit
+    if (!(cin >> n >> m >> k)) return 0;
+
+    vector<edge> ed;
+    for (int i = 0; i < m; i++) {
+        int a, b; ll c;
+        cin >> a >> b >> c;
+        ed.push_back({a, b, c});
+    }
+
+    // 1. Initialize with INF, only source is 0
+    vector<ll> d(n + 1, INF);
+    d[1] = 0;
+
+    // 2. Run the loop exactly K times
+    for (int i = 0; i < k; i++) {
+        // Create a copy to ensure we only use results from the PREVIOUS iteration
+        vector<ll> next_d = d; 
+
+        for (edge e : ed) {
+            int u = e.u;
+            int v = e.v;
+            ll w = e.w;
+
+            // If the starting node of the edge was reached in i-1 steps
+            if (d[u] != INF) {
+                if (d[u] + w < next_d[v]) {
+                    next_d[v] = d[u] + w;
+                }
+            }
+        }
+        // Update the main distance array after checking ALL edges for this step
+        d = next_d;
+    }
+
+    // 3. Output the result
+    if (d[n] == INF) {
+        cout << "Impossible" << endl;
+    } else {
+        cout << d[n] << endl;
+    }
+
+    return 0;
+}
