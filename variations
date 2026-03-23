@@ -1,0 +1,56 @@
+1. The $K$-Coupons Variant
+Condition: Instead of one coupon, the traveler has k discount coupons. Each coupon can be used once on different flights.
+•	Code Change: Change the distance array to dist[n+1][k+1].
+•	Logic: When traversing an edge, you have two choices if you have coupons left:
+1.	Don't use a coupon: dist[v][used] = min(dist[v][used], dist[u][used] + c)
+2.	Use a coupon (if used < k): dist[v][used+1] = min(dist[v][used+1], dist[u][used] + c/2)
+
+2. The "Buy One, Get One Free" Variant
+Condition: The traveler has a coupon that makes one flight completely free ($cost = 0$), rather than half price.
+•	Code Change: In the transition logic where the coupon is used:
+o	dist[v][1] = min(dist[v][1], cur_cost + 0);
+
+3. The Round-Trip Variant
+Condition: The traveler must go from Dhaka to London and back to Dhaka. The single coupon can be used once at any point in the entire circular journey.
+•	Code Change: 1. Run the Dijkstra as you have it to find dist1[i][state] (Dhaka to all). 2. Run another Dijkstra dist2[i][state] starting from London (London to all). 3. The answer is the minimum of dist1[n][0] + dist2[1][1] (coupon used on way back) or dist1[n][1] + dist2[1][0] (coupon used on way there).
+4. The "Taxed" Flight Variant
+Condition: Every time you land at an airport, you must pay a fixed airport tax $T_i$. The coupon halves the flight price but not the airport tax.
+•	Code Change:
+o	dist[v][0] = min(..., cur_cost + c + tax[v])
+o	dist[v][1] = min(..., cur_cost + (c/2) + tax[v])
+
+
+Two Coupons, Can Be Used on the Same Flight
+The traveler has two discount coupons.
+Both coupons may be applied to the same flight, reducing cost from x → ⌊⌊x/2⌋ / 2⌋.
+Find the minimum possible cost.
+🔧 State idea:
+On an edge, you have three choices:
+•	use 0 coupons
+•	use 1 coupon
+•	use 2 coupons (if available)
+
+Coupon Can Be Used Only After Visiting a Special Airport
+The traveler has one coupon, but it can be used only after visiting at least one airport from a given set S.
+Find the minimum travel cost.
+🔧 State idea:
+dist[node][coupon_used][visited_special]
+
+2. Longest Path in a Graph (No Positive Cycles)
+Sometimes a problem asks for the "maximum score" or "longest path" instead of the shortest.
+•	The Constraint: The graph must not have a positive cycle (a cycle where the sum of weights is $> 0$), otherwise the path could be infinitely long.
+•	The Logic:
+o	Initialize distances to a very small number (-INF).
+o	Flip the comparison: if (d[u] + w > d[v]) { d[v] = d[u] + w; }.
+o	This is often used in Project Management (PERT charts) to find the minimum time needed to complete a project.
+Shortest Path with at most $K$ EdgesSometimes you don't care if there's a negative cycle elsewhere; you just need the best path within a specific limit.The Change: Find the shortest path from node $1$ to node $n$ that uses at most $K$ edges.The Twist: Even if there is a negative cycle, you cannot traverse it infinitely because of the $K$ limit.How to solve: In your current code, the outer loop runs $n$ times. To solve this, run the outer loop exactly $K$ times using the bellmanford algorithm
+// 2. Run the loop exactly K times for (int i = 0; i < k; i++) { 
+vector<ll> next_d = d; for (edge e : ed) { int u = e.u; int v = e.v; ll w = e.w; 
+if (d[u] != INF) { if (d[u] + w < next_d[v]) { next_d[v] = d[u] + w; } } } 
+d = next_d; }
+
+for exactly k edge
+// Inside the K-loop
+vector<ll> next_d(n + 1, INF);
+for (edge e : ed) { if (d[e.u] != INF) { if (d[e.u] + e.w < next_d[e.v]) { next_d[e.v] = d[e.u] + e.w; } } }
+d = next_d;
